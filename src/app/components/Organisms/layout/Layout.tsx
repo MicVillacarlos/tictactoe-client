@@ -1,16 +1,13 @@
 "use client";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useWindowSize } from "../../../utils/hooks/hooks";
-import { DashboardIcon } from "../../svg/DashboardIcon";
 import { HamburgerIcon } from "../../svg/HamburgerIcon";
-import { LodgersIcon } from "../../svg/LodgersIcon";
-import { SettingsIcon } from "../../svg/SettingsIcon";
-import { BillsIcon } from "../../svg/BillsIcon";
-import { LogoutIcon } from "../../svg/LogoutIcon";
+import { ListIcon } from "../../svg/ListIcon";
 import Image from "next/image";
 import React from "react";
 import clsx from "clsx";
+import { GameIcon } from "../../svg/GameIcon";
 
 export default function Layout({
   children,
@@ -21,7 +18,6 @@ export default function Layout({
   const windowWidth: number = useWindowSize();
   const [isSideBarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const pathname = usePathname();
-  const router = useRouter(); // ✅ To handle client-side navigation
 
   useEffect(() => {
     if (windowWidth > 639) {
@@ -35,12 +31,6 @@ export default function Layout({
     setIsSidebarOpen(!isSideBarOpen);
   };
 
-  const handleLogout = () => {
-    document.cookie =
-      "authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    router.push("/login");
-  };
-
   const iconColor = useCallback((path: string) => {
     return pathname.startsWith(path) ?  "#205072" : "#7996AA";
   }, [pathname]);
@@ -48,27 +38,15 @@ export default function Layout({
   const SideBarOptions = [
     {
       key: 1,
-      label: "Dashboard",
-      href: "/admin/dashboard",
-      icon: <DashboardIcon color={iconColor("/admin/dashboard")} />,
+      label: "Game",
+      href: "/game",
+      icon: <GameIcon color={iconColor("/game")} />,
     },
     {
       key: 2,
-      label: "Lodgers",
-      href: "/admin/lodgers",
-      icon: <LodgersIcon color={iconColor("/admin/lodgers")} />,
-    },
-    {
-      key: 3,
-      label: "Bills",
-      href: "/admin/bills",
-      icon: <BillsIcon color={iconColor("/admin/bills")} />,
-    },
-    {
-      key: 4,
-      label: "Settings",
-      href: "/admin/settings",
-      icon: <SettingsIcon color={iconColor("/admin/settings")} />,
+      label: "History",
+      href: "/history",
+      icon: <ListIcon color={iconColor("/history")} />,
     },
   ];
 
@@ -94,13 +72,13 @@ export default function Layout({
         aria-label="Sidebar"
       >
         <div className="h-full px-8 py-2 overflow-y-auto">
-          <a className="py-[48] flex items-center ps-2.5 mb-5">
+          <a className="py-[48] flex items-center">
             <Image
-              src="/elevenv-logo.svg"
-              alt="Eleven V Logo"
+              src="/tictactoe_large.svg"
+              alt="TicTacToe_logo"
               width={0}
               height={0}
-              style={{ width: "100%", height: "auto" }}
+              style={{ width: "500px", height: "auto" }}
             />
           </a>
           <ul className="space-y-3 font-semibold">
@@ -132,17 +110,6 @@ export default function Layout({
               );
             })}
             {/* ✅ Logout Button */}
-            <li>
-              <button
-                onClick={handleLogout}
-                className="flex items-center p-2 w-full rounded-lg group transition-all text-[#7996AA] hover:bg-gray-100"
-              >
-                <span className="w-[50px] flex items-center justify-start">
-                  <LogoutIcon />
-                </span>
-                <span>Logout</span>
-              </button>
-            </li>
           </ul>
         </div>
       </aside>
