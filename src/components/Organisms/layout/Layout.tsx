@@ -1,13 +1,13 @@
 "use client";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { useWindowSize } from "../../../utils/hooks/hooks";
 import { HamburgerIcon } from "../../svg/HamburgerIcon";
 import { ListIcon } from "../../svg/ListIcon";
 import Image from "next/image";
 import React from "react";
 import clsx from "clsx";
 import { GameIcon } from "../../svg/GameIcon";
+import { useWindowSize } from "../../../lib/utils/hooks/hooks";
 
 export default function Layout({
   children,

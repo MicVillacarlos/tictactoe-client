@@ -1,12 +1,12 @@
 "use client";
 import React, { useCallback, useState } from "react";
-import Layout from "../components/Organisms/layout/Layout";
-import PrimaryButton from "../components/Atoms/buttons/PrimaryButton";
+import Layout from "../../components/Organisms/layout/Layout";
 import Image from "next/image";
-import ModalForm from "../components/Organisms/modal/ModalForm";
+import ModalForm from "../../components/Organisms/modal/ModalForm";
 import StartNewGameFormContent from "./StartNewGameFormContent";
-import Board from "../components/Organisms/board/Board";
-import { addApostrophe } from "../helpers/helpers";
+import Board from "../../components/Organisms/board/Board";
+import { addApostrophe } from "../../helpers/helpers";
+import PrimaryButton from "../../components/Atoms/buttons/PrimaryButton";
 
 const Game = () => {
   const [isViewStartGame, setIsViewStartGame] = useState<boolean>(false);
@@ -29,7 +29,7 @@ const Game = () => {
     [1, 4, 7],
     [2, 5, 8],
     [0, 4, 8],
-    [2, 4, 6], 
+    [2, 4, 6],
   ];
 
   const checkWinner = (board: string[]): string | null => {

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import TextInput from "../components/Atoms/input/TextInput";
-import Text2xl from "../components/Atoms/text/Text2xl";
+import TextInput from "../../components/Atoms/input/TextInput";
+import Text2xl from "../../components/Atoms/text/Text2xl";
 
 interface StartNewGameFormContentProps {
   handleChangeForm: (e: React.ChangeEvent<HTMLInputElement>) => void;
