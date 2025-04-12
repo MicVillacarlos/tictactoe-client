@@ -3,7 +3,7 @@ export interface Column<T> {
   label: string;
   type?: "money" | "date" | "status_select";
   justify?: "center" | "left" | "right";
-  render?: (row: T) => React.ReactNode;
+  render?: (row: T, index?:number) => React.ReactNode;
 }
 export interface TableProps<T extends { _id: string }> {
   data: T[];
@@ -22,4 +22,5 @@ export interface TableProps<T extends { _id: string }> {
     id: string
   ) => void;
   onClickView?: (arg0: T | string) => void;
+  viewButtonTitle?: string;
 }

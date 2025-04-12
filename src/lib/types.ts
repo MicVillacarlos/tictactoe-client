@@ -45,3 +45,16 @@ export interface Player {
     rounds: number;
     overAllWinner: Player | null;
   }
+
+  export interface FetchRoundResponse {
+    _id: string;
+    game_id: string;
+    board: string[];
+    winner: "X" | "O" | null;
+    status: "incomplete" | "draw" | "completed";
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+    winnerName?: string;
+    loserName?: string;
+  }

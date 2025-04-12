@@ -3,10 +3,10 @@ interface BoardProps {
     handleClick?: (index: number) => void;
   }
   
-  const Board = ({ board, handleClick}: BoardProps) => {
+  const Board = ({ board, handleClick }: BoardProps) => {
     return (
       <div>
-        <div className="grid grid-cols-3 gap-2 w-64 mx-auto">
+        <div className="grid grid-cols-3 gap-2 w-80 mx-auto">
           {board.map((cell, i) => (
             <div
               key={i}

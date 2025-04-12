@@ -1,5 +1,5 @@
 import React from "react";
-import CloseIcon from "../../../svg/CloseIcon";
+import CloseIcon from "../../svg/CloseIcon";
 
 interface ModalPropsType {
   widthSize?: string;
@@ -19,13 +19,10 @@ const ModalView = (props: ModalPropsType) => {
       aria-hidden="true"
       className={`${
         isOpen ? "" : "hidden"
-      } overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0 h-[calc(100%)] max-h-full bg-black bg-opacity-50`}
+      } overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0 h-[calc(100%)] max-h-full bg-black/40`}
+
     >
-      <div
-        className={
-          `relative p-4 w-full max-w-xl max-h-full`
-        }
-      >
+      <div className={`relative p-4 w-full max-w-xl max-h-full`}>
         <div className="relative rounded-lg shadow-sm bg-white text-black">
           <div className="flex items-center justify-between p-4 md:p-5">
             <h3 className="text-xl font-semibold">{title}</h3>

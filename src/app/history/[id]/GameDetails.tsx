@@ -5,11 +5,12 @@ import TableLoading from "../../../components/Organisms/loaders/TableLoading";
 import dynamic from "next/dynamic";
 import { Column, TableProps } from "../../../components/Organisms/table/type";
 import Text3xl from "../../../components/Atoms/text/Text3xl";
-import { FetchGameResponse } from "../../../lib/types";
-import { fetchGames } from "../../../api/game";
-import router from "next/router";
+import { FetchRoundResponse } from "../../../lib/types";
+import { fetchRounds } from "../../../api/round";
+import ModalView from "../../../components/Organisms/modal/ModalView";
+import Board from "../../../components/Organisms/board/Board";
 
-const GameDetailTable= dynamic(
+const GameDetailTable = dynamic(
   () => import("../../../components/Organisms/table/Table"),
   {
     loading: () => <TableLoading />,
@@ -17,41 +18,50 @@ const GameDetailTable= dynamic(
   }
 ) as <T extends { _id: string }>(props: TableProps<T>) => JSX.Element;
 
-const GameDetails = ({ initialData, initialTotal }: { initialData: FetchGameResponse[]; initialTotal: number }) => {
+const GameDetails = ({
+  initialData,
+  initialTotal,
+  gameId,
+}: {
+  initialData: FetchRoundResponse[];
+  initialTotal: number;
+  gameId: string;
+  }) => {
+  const [board, setBoard] = useState<string[]>([]);
+  const [isViewBoard, setIsViewBoard] = useState<boolean>(false);
   const [detailsData, setDetailsData] =
-    useState<FetchGameResponse[]>(initialData);
+    useState<FetchRoundResponse[]>(initialData);
   const [pagination, setPagination] = useState({
     current: 1,
     limit: 10,
     total: initialTotal,
   });
 
-  const tableColumns: Column<FetchGameResponse>[] = [
-    { key: "createdAt", label: "Date", type: "date" },
+  const tableColumns: Column<FetchRoundResponse>[] = [
     {
-      key: "playerX",
-      label: "Player X",
-      render: (row) => row.playerX.name,
+      key: "_id",
+      label: "Round",
+      render: (_row, index) => (index ?? 0) + 1,
     },
     {
-      key: "playerO",
-      label: "Player O",
-      render: (row) => row.playerO.name,
+      key: "winnerName",
+      label: "Winner",
+      render: (row) => row.winnerName ?? "None",
     },
     {
-      key: "rounds",
-      label: "Rounds",
+      key: "loserName",
+      label: "Loser",
+      render: (row) => row.loserName ?? "None",
     },
     {
-      key: "overAllWinner",
-      label: "Overall Winner",
-      render: (row) => row.overAllWinner?.name ?? "TBD",
+      key: "status",
+      label: "Status",
     },
   ];
-  
 
   const fetchData = async () => {
-    const { count, data } = await fetchGames(
+    const { count, data } = await fetchRounds(
+      gameId,
       pagination.current,
       pagination.limit
     );
@@ -73,7 +83,6 @@ const GameDetails = ({ initialData, initialTotal }: { initialData: FetchGameResp
     fetchData();
   }, [pagination.current]);
   //--Prevents fetch in first render
-
 
   const handleNextPagination = useCallback(() => {
     setPagination((prevState) => {
@@ -99,9 +108,18 @@ const GameDetails = ({ initialData, initialTotal }: { initialData: FetchGameResp
     }));
   }, []);
 
-  const handleClickViewDetails = useCallback((data: FetchGameResponse | string) => {
-    const {_id} = data as FetchGameResponse
-    router.push(`/admin/bills/${_id}`);
+  const handleClickViewDetails = useCallback(
+    (data: FetchRoundResponse | string) => {
+      const { board } = data as FetchRoundResponse;
+      setBoard(board);
+      setIsViewBoard(true);
+    },
+    []
+  );
+
+  const onCloseModalHandler = useCallback(() => {
+    setIsViewBoard(false);
+    setBoard([])
   },[])
 
   return (
@@ -114,9 +132,15 @@ const GameDetails = ({ initialData, initialTotal }: { initialData: FetchGameResp
         columns={tableColumns ?? []}
         handleNextNavigation={handleNextPagination}
         handlePrevNavigation={handlePrevPagination}
+        viewButtonTitle="View Board"
         onClickView={handleClickViewDetails}
         onSelectTablePage={onSelectTablePage}
         pagination={pagination}
+      />
+      <ModalView
+        content={<Board board={board}/>}
+        isOpen={isViewBoard}
+        onCloseModal={onCloseModalHandler}
       />
     </Layout>
   );

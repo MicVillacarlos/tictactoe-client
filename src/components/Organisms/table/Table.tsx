@@ -22,6 +22,7 @@ const Table = <
   handlePrevNavigation,
   onSelectTablePage,
   onClickView,
+  viewButtonTitle,
   pagination,
 }: TableProps<T>) => {
   const pages = paginationPages(
@@ -32,13 +33,18 @@ const Table = <
 
   const getCellContent = <T extends { _id: string }>(
     item: T,
-    col: { key: keyof T; type?: string; render?: (row: T) => React.ReactNode }
-  ) => {
-    if (col.render) {
-      return col.render(item);
-    }
-
+    col: {
+      key: keyof T;
+      type?: string;
+      render?: (row: T, index: number) => React.ReactNode;
+    },
+    index: number // ← add this!
+  ): React.ReactNode => {
     const value = item[col.key];
+
+    if (col.render) {
+      return col.render(item, index);
+    }
 
     if (col.type === "money" && typeof value === "number") {
       return moneyFormat(value);
@@ -58,6 +64,7 @@ const Table = <
 
     return value as React.ReactNode;
   };
+
   return (
     <div className="relative overflow-x-auto w-full">
       {data.length ? (
@@ -100,7 +107,7 @@ const Table = <
                                 : "text-left"
                             }`}
                           >
-                            {getCellContent(item, col)}
+                            {getCellContent(item, col, index)}
                           </td>
                         ))}
 
@@ -110,7 +117,7 @@ const Table = <
                               onClick={() => onClickView(item)}
                               className="hover:bg-gray-100 hover:text-gray-700 cursor-pointer"
                             >
-                              View Details
+                              {viewButtonTitle ?? "View Details"}
                             </button>
                           </td>
                         )}

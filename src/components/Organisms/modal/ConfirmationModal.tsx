@@ -1,6 +1,5 @@
 "use client"
 import React from "react";
-import { WarningIcon } from "../../../svg/WarningIcon";
 
 interface ModalPropsType {
   isOpen: boolean;
@@ -20,11 +19,10 @@ const ConfirmationModal = (props: ModalPropsType) => {
       aria-hidden="true"
       className={`${
         isOpen ? "" : "hidden"
-      } overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-[9999] flex justify-center items-center w-full md:inset-0 h-[calc(100%)] max-h-full bg-black bg-opacity-50`}
+      } overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0 h-[calc(100%)] max-h-full bg-black bg-black/40`}
     >
       <div className={`relative w-full max-h-full max-w-md`}>
         <div className="relative rounded-lg shadow-sm bg-white text-black p-7 flex flex-col items-center">
-          <WarningIcon size={80} color={"#205072"} />
           <p className="text-2xl font-bold my-2">{title}</p>
           <p className="text-base mb-8">{message}</p>
           <div className="flex flex-col w-full gap-2">

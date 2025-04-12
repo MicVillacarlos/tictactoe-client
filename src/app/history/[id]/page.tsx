@@ -1,8 +1,19 @@
+import { fetchRounds } from "../../../api/round";
 import GameDetails from "./GameDetails";
 
+interface ParamsType {
+  params: {
+    id: string;
+  };
+}
 
-export default async function HistoryPage() {
-    // const { data: initialData, count: initialTotal } = await fetchGames(1,10);
+export default async function GameDetailsPage({ params }: ParamsType) {
+  const { id } = params;
+  const { data: initialData, count: initialTotal } = await fetchRounds(
+    id,
+    1,
+    10
+  );
 
-    return (<GameDetails initialData={[]} initialTotal={0} />)
+  return <GameDetails initialData={initialData} initialTotal={initialTotal} gameId={id} />;
 }
