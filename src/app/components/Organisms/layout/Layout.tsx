@@ -38,7 +38,7 @@ export default function Layout({
   const SideBarOptions = [
     {
       key: 1,
-      label: "Game",
+      label: "Play Game",
       href: "/game",
       icon: <GameIcon color={iconColor("/game")} />,
     },
