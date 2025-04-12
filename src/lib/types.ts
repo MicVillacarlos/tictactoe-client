@@ -34,3 +34,14 @@ export interface Player {
     round: Round;
   }
   
+
+  export interface FetchGameResponse {
+    _id: string;
+    playerX: Player;
+    playerO: Player;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+    rounds: number;
+    overAllWinner: Player | null;
+  }

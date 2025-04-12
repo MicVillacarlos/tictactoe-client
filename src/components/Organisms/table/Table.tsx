@@ -21,6 +21,7 @@ const Table = <
   handleNextNavigation,
   handlePrevNavigation,
   onSelectTablePage,
+  onClickView,
   pagination,
 }: TableProps<T>) => {
   const pages = paginationPages(
@@ -31,9 +32,14 @@ const Table = <
 
   const getCellContent = <T extends { _id: string }>(
     item: T,
-    col: { key: keyof T; type?: string }
+    col: { key: keyof T; type?: string; render?: (row: T) => React.ReactNode }
   ) => {
+    if (col.render) {
+      return col.render(item);
+    }
+
     const value = item[col.key];
+
     if (col.type === "money" && typeof value === "number") {
       return moneyFormat(value);
     }
@@ -52,51 +58,68 @@ const Table = <
 
     return value as React.ReactNode;
   };
-
   return (
     <div className="relative overflow-x-auto w-full">
       {data.length ? (
         <>
-          <div className="overflow-x-auto rounded-t-md">
-            {
-              <table className="w-full text-base text-left rtl:text-right text-gray-500 shadow-sm">
-                <thead className="text-sm uppercase bg-[#205072] text-white">
-                  <tr>
-                    {columns.map((col, index) => (
-                      <th
-                        key={index}
-                        scope="col"
-                        className={`px-6 py-3 ${
-                          col.justify === "right" ? "text-right" : "text-left"
-                        }`}
-                      >
-                        {col.label}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {data.map((item, index) => (
-                    <tr
-                      key={index}
-                      className="bg-white border-b border-gray-200"
-                    >
+          <div className="overflow-x-auto w-full rounded-t-md">
+            <div className="min-w-[700px]">
+              {
+                <table className="w-full text-base text-left rtl:text-right text-gray-500 shadow-sm">
+                  <thead className="text-sm uppercase bg-[#205072] text-white">
+                    <tr>
                       {columns.map((col, index) => (
-                        <td
+                        <th
                           key={index}
-                          className={`px-6 py-4 ${
+                          scope="col"
+                          className={`px-6 py-3 ${
                             col.justify === "right" ? "text-right" : "text-left"
                           }`}
                         >
-                          {getCellContent(item, col)}
-                        </td>
+                          {col.label}
+                        </th>
                       ))}
+                      {onClickView && (
+                        <th className="px-6 py-3 text-center">Actions</th>
+                      )}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            }
+                  </thead>
+
+                  <tbody>
+                    {data.map((item, index) => (
+                      <tr
+                        key={index}
+                        className="bg-white border-b border-gray-200"
+                      >
+                        {columns.map((col, colIndex) => (
+                          <td
+                            key={colIndex}
+                            className={`px-6 py-4 ${
+                              col.justify === "right"
+                                ? "text-right"
+                                : "text-left"
+                            }`}
+                          >
+                            {getCellContent(item, col)}
+                          </td>
+                        ))}
+
+                        {onClickView && (
+                          <td className="flex justify-center px-6 py-4 space-x-2">
+                            <button
+                              onClick={() => onClickView(item)}
+                              className="hover:bg-gray-100 hover:text-gray-700 cursor-pointer"
+                            >
+                              View Details
+                            </button>
+                          </td>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              }
+            </div>
           </div>
 
           <nav aria-label="Page navigation" className="w-full">

@@ -1,38 +1,30 @@
 "use client";
 import React, { JSX, useCallback, useEffect, useRef, useState } from "react";
-import Layout from "../../components/Organisms/layout/Layout";
-import TableLoading from "../../components/Organisms/loaders/TableLoading";
+import Layout from "../../../components/Organisms/layout/Layout";
+import TableLoading from "../../../components/Organisms/loaders/TableLoading";
 import dynamic from "next/dynamic";
-import { Column, TableProps } from "../../components/Organisms/table/type";
-import Text3xl from "../../components/Atoms/text/Text3xl";
-import { FetchGameResponse } from "../../lib/types";
-import { fetchGames } from "../../api/game";
-import { useRouter } from "next/navigation";
+import { Column, TableProps } from "../../../components/Organisms/table/type";
+import Text3xl from "../../../components/Atoms/text/Text3xl";
+import { FetchGameResponse } from "../../../lib/types";
+import { fetchGames } from "../../../api/game";
+import router from "next/router";
 
-const HistoryTable = dynamic(
-  () => import("../../components/Organisms/table/Table"),
+const GameDetailTable= dynamic(
+  () => import("../../../components/Organisms/table/Table"),
   {
     loading: () => <TableLoading />,
     ssr: false,
   }
 ) as <T extends { _id: string }>(props: TableProps<T>) => JSX.Element;
 
-const History = ({
-  initialData,
-  initialTotal,
-}: {
-  initialData: FetchGameResponse[];
-  initialTotal: number;
-}) => {
-  const [historyData, setHistoryData] =
+const GameDetails = ({ initialData, initialTotal }: { initialData: FetchGameResponse[]; initialTotal: number }) => {
+  const [detailsData, setDetailsData] =
     useState<FetchGameResponse[]>(initialData);
   const [pagination, setPagination] = useState({
     current: 1,
     limit: 10,
     total: initialTotal,
   });
-
-  const router = useRouter();
 
   const tableColumns: Column<FetchGameResponse>[] = [
     { key: "createdAt", label: "Date", type: "date" },
@@ -56,13 +48,14 @@ const History = ({
       render: (row) => row.overAllWinner?.name ?? "TBD",
     },
   ];
+  
 
   const fetchData = async () => {
     const { count, data } = await fetchGames(
       pagination.current,
       pagination.limit
     );
-    setHistoryData(data);
+    setDetailsData(data);
     setPagination((prevState) => ({
       ...prevState,
       total: count,
@@ -80,6 +73,7 @@ const History = ({
     fetchData();
   }, [pagination.current]);
   //--Prevents fetch in first render
+
 
   const handleNextPagination = useCallback(() => {
     setPagination((prevState) => {
@@ -105,21 +99,18 @@ const History = ({
     }));
   }, []);
 
-  const handleClickViewDetails = useCallback(
-    (data: FetchGameResponse | string) => {
-      const { _id } = data as FetchGameResponse;
-      router.push(`/history/${_id}`);
-    },
-    []
-  );
+  const handleClickViewDetails = useCallback((data: FetchGameResponse | string) => {
+    const {_id} = data as FetchGameResponse
+    router.push(`/admin/bills/${_id}`);
+  },[])
 
   return (
     <Layout>
       <div className="flex w-full justify-between items-center mb-8">
-        <Text3xl> History </Text3xl>
+        <Text3xl> Game Details </Text3xl>
       </div>
-      <HistoryTable
-        data={historyData ?? []}
+      <GameDetailTable
+        data={detailsData ?? []}
         columns={tableColumns ?? []}
         handleNextNavigation={handleNextPagination}
         handlePrevNavigation={handlePrevPagination}
@@ -131,4 +122,4 @@ const History = ({
   );
 };
 
-export default History;
+export default GameDetails;

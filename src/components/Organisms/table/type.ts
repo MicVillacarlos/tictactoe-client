@@ -21,5 +21,5 @@ export interface TableProps<T extends { _id: string }> {
     e: React.ChangeEvent<HTMLSelectElement>,
     id: string
   ) => void;
-  selectedBillNumbers?: number[];
+  onClickView?: (arg0: T | string) => void;
 }

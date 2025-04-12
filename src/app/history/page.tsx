@@ -1,5 +1,8 @@
+import { fetchGames } from "../../api/game";
 import History from "./history";
 
 export default async function HistoryPage() {
-    return (<History/>)
+    const { data: initialData, count: initialTotal } = await fetchGames(1,10);
+
+    return (<History initialData={initialData} initialTotal={initialTotal}/>)
 }
