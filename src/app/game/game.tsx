@@ -5,8 +5,10 @@ import Image from "next/image";
 import ModalForm from "../../components/Organisms/modal/ModalForm";
 import StartNewGameFormContent from "./StartNewGameFormContent";
 import Board from "../../components/Organisms/board/Board";
-import { addApostrophe } from "../../helpers/helpers";
+import { addApostrophe } from "../../lib/helpers/helpers";
 import PrimaryButton from "../../components/Atoms/buttons/PrimaryButton";
+import { addGame } from "../../api/game";
+import { addRound, updateBoard, updateRound } from "../../api/round";
 
 const Game = () => {
   const [isViewStartGame, setIsViewStartGame] = useState<boolean>(false);
@@ -14,6 +16,7 @@ const Game = () => {
 
   const [board, setBoard] = useState(Array(9).fill(""));
   const [gameData, setGameData] = useState({
+    round_id: "",
     game_id: "",
     player_x: "",
     player_o: "",
@@ -41,37 +44,52 @@ const Game = () => {
     return board.every((cell) => cell) ? "draw" : null;
   };
 
-  const handleClick = (index: number) => {
+  const handleClick = async (index: number) => {
     if (board[index] || winner) return;
 
     const newBoard = [...board];
     newBoard[index] = currentPlayer;
 
+    setBoard(newBoard);
+    setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
+
     const result = checkWinner(newBoard);
     if (result === "draw") {
       setWinner("Draw");
+      await updateRound(gameData.round_id, newBoard, null, 'draw');
+      return;
     } else if (result) {
       setWinner(result);
+      await updateRound(gameData.round_id, newBoard, result, 'completed');
+      return;
     }
-
-    setBoard(newBoard);
-    setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
+    await updateBoard(gameData.round_id, newBoard);
   };
 
-  const resetGame = () => {
+  const onClickContinue = async() => {
     setBoard(Array(9).fill(""));
     setCurrentPlayer("X");
     setWinner(null);
+    
+    const round = await addRound(gameData.game_id);
+    setGameData({ ...gameData, round_id: round.round._id });
   };
 
   const handleChangeNewGameForm = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGameData({ ...gameData, [e.target.id]: e.target.value });
   };
 
-  const onSubmitStartNewGame = (e: React.FormEvent) => {
+  const onSubmitStartNewGame = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsViewStartGame(false);
-    setIsShowBoard(true);
+
+    const createGame = await addGame(gameData.player_x, gameData.player_o);
+
+    if (createGame.success) {
+      const round = await addRound(createGame.game._id);
+      setGameData({ ...gameData, game_id: createGame.game._id, round_id: round.round._id });
+      setIsViewStartGame(false);
+      setIsShowBoard(true);
+    }
   };
 
   const renderStatus = useCallback(() => {
@@ -111,9 +129,11 @@ const Game = () => {
           <>
             {renderStatus()}
             <Board board={board} handleClick={handleClick} />
-            <PrimaryButton width="200px" onClick={() => resetGame()}>
-              Stop
-            </PrimaryButton>
+            {winner && (
+              <PrimaryButton width="200px" onClick={() => onClickContinue()}>
+                Continue
+              </PrimaryButton>
+            )}
           </>
         )}
       </div>
