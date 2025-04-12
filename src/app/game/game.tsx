@@ -9,6 +9,7 @@ import { addApostrophe } from "../../lib/helpers/helpers";
 import PrimaryButton from "../../components/Atoms/buttons/PrimaryButton";
 import { addGame } from "../../api/game";
 import { addRound, updateBoard, updateRound } from "../../api/round";
+import { WINNING_COMBOS } from "../../lib/utils/constants/constants";
 
 const Game = () => {
   const [isViewStartGame, setIsViewStartGame] = useState<boolean>(false);
@@ -23,17 +24,6 @@ const Game = () => {
   });
   const [currentPlayer, setCurrentPlayer] = useState<"X" | "O">("X");
   const [winner, setWinner] = useState<string | null>(null);
-
-  const WINNING_COMBOS = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
 
   const checkWinner = (board: string[]): string | null => {
     const winnerLine = WINNING_COMBOS.find(
@@ -70,7 +60,7 @@ const Game = () => {
     setBoard(Array(9).fill(""));
     setCurrentPlayer("X");
     setWinner(null);
-    
+
     const round = await addRound(gameData.game_id);
     setGameData({ ...gameData, round_id: round.round._id });
   };
@@ -115,7 +105,7 @@ const Game = () => {
             <Image
               src="/tictactoe_text.svg"
               alt="TicTacToe_logo"
-              width={450}
+              width={350}
               height={0}
             />
             <PrimaryButton
