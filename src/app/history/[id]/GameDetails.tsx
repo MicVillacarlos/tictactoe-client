@@ -1,5 +1,5 @@
 "use client";
-import React, { JSX, useCallback, useEffect, useRef, useState } from "react";
+import React, { JSX, useCallback, useEffect, useState } from "react";
 import Layout from "../../../components/Organisms/layout/Layout";
 import TableLoading from "../../../components/Organisms/loaders/TableLoading";
 import dynamic from "next/dynamic";
@@ -9,6 +9,7 @@ import { FetchRoundResponse } from "../../../lib/types";
 import { fetchRounds } from "../../../api/round";
 import ModalView from "../../../components/Organisms/modal/ModalView";
 import Board from "../../../components/Organisms/board/Board";
+import { useParams } from "next/navigation";
 
 const GameDetailTable = dynamic(
   () => import("../../../components/Organisms/table/Table"),
@@ -18,30 +19,21 @@ const GameDetailTable = dynamic(
   }
 ) as <T extends { _id: string }>(props: TableProps<T>) => JSX.Element;
 
-const GameDetails = ({
-  initialData,
-  initialTotal,
-  gameId,
-}: {
-  initialData: FetchRoundResponse[];
-  initialTotal: number;
-  gameId: string;
-  }) => {
+const GameDetails = () => {
   const [board, setBoard] = useState<string[]>([]);
   const [isViewBoard, setIsViewBoard] = useState<boolean>(false);
   const [detailsData, setDetailsData] =
-    useState<FetchRoundResponse[]>(initialData);
+    useState<FetchRoundResponse[]>([]);
   const [pagination, setPagination] = useState({
     current: 1,
     limit: 10,
-    total: initialTotal,
+    total: 0,
   });
 
   const tableColumns: Column<FetchRoundResponse>[] = [
     {
-      key: "_id",
+      key: "roundNum",
       label: "Round",
-      render: (_row, index) => (index ?? 0) + 1,
     },
     {
       key: "winnerName",
@@ -59,9 +51,11 @@ const GameDetails = ({
     },
   ];
 
+  const params = useParams();
+
   const fetchData = async () => {
     const { count, data } = await fetchRounds(
-      gameId,
+      params.id as string,
       pagination.current,
       pagination.limit
     );
@@ -72,18 +66,10 @@ const GameDetails = ({
     }));
   };
 
-  //--Prevents fetch in first render
-  const isFirstRender = useRef(true);
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-
     fetchData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.current]);
-  //--Prevents fetch in first render
 
   const handleNextPagination = useCallback(() => {
     setPagination((prevState) => {

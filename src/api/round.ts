@@ -26,6 +26,5 @@ export async function fetchRounds(
   page: number,
   limit: number
 ): Promise<{ count: number; data: FetchRoundResponse[] }> {
-  console.log(`${gameId}/${page}/${limit}`)
   return api.get(`/api/round/${gameId}/${page}/${limit}`);
 }
