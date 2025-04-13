@@ -81,6 +81,7 @@ const GameDetails = ({
     }
 
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.current]);
   //--Prevents fetch in first render
 

@@ -33,6 +33,7 @@ const ConfirmationModal = (props: ModalPropsType) => {
     if (isOpen && gameId) {
       fetchData();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, gameId]);
 
   const status = useMemo(() => {
