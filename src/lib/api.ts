@@ -5,11 +5,15 @@ async function request<T>(
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
   body?: unknown
 ): Promise<T> {
+  const headers: HeadersInit = {};
+
+  if (body) {
+    headers["Content-Type"] = "application/json";
+  }
+
   const res = await fetch(`${baseUrl}${url}`, {
     method,
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     ...(body ? { body: JSON.stringify(body) } : {}),
   });
 
@@ -20,7 +24,6 @@ async function request<T>(
 
   return res.json();
 }
-
 export const api = {
   get: <T>(url: string) => request<T>(url, "GET"),
   post: <T>(url: string, body: unknown) => request<T>(url, "POST", body),
