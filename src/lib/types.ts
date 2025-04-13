@@ -9,6 +9,8 @@ export interface Player {
     playerX: Player;
     playerO: Player;
     createdAt: string;
+    rounds?: number;
+    draws?: number;
     updatedAt: string;
     __v: number;
   }

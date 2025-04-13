@@ -25,8 +25,8 @@ const ModalForm = (props: ModalPropsType) => {
       <div className={`relative p-4 w-full max-h-full max-w-xl`}>
         <div className="relative rounded-lg shadow-sm bg-white text-black">
           <form onSubmit={onSubmitForm}>
-            <div className="pt-5 pr-4 pl-4 ">{content}</div>
-            <div className="flex pr-4 pl-4 pb-5  w-full justify-center">
+            <div className="pt-4 pr-8 pl-8">{content}</div>
+            <div className="flex pr-4 pl-4 pb-6 w-full justify-center">
               <div className="flex flex-col gap-2 w-1/3">
                 <PrimaryButton width="50%">{submitButtonText}</PrimaryButton>
                 <SecondaryButton width="50%" onClick={onCloseModal}>

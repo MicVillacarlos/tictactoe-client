@@ -1,19 +1,21 @@
 "use client";
-import React, { useCallback, useState } from "react";
-import Layout from "../../components/Organisms/layout/Layout";
 import Image from "next/image";
-import ModalForm from "../../components/Organisms/modal/ModalForm";
-import StartNewGameFormContent from "./StartNewGameFormContent";
-import Board from "../../components/Organisms/board/Board";
-import { addApostrophe } from "../../lib/helpers/helpers";
-import PrimaryButton from "../../components/Atoms/buttons/PrimaryButton";
+import React, { useCallback, useState } from "react";
 import { addGame } from "../../api/game";
 import { addRound, updateBoard, updateRound } from "../../api/round";
+import PrimaryButton from "../../components/Atoms/buttons/PrimaryButton";
+import Board from "../../components/Organisms/board/Board";
+import Layout from "../../components/Organisms/layout/Layout";
+import ConfirmationModal from "../../components/Organisms/modal/ConfirmationModal";
+import ModalForm from "../../components/Organisms/modal/ModalForm";
+import { addApostrophe } from "../../lib/helpers/helpers";
 import { WINNING_COMBOS } from "../../lib/utils/constants/constants";
+import StartNewGameFormContent from "./StartNewGameFormContent";
 
 const Game = () => {
   const [isViewStartGame, setIsViewStartGame] = useState<boolean>(false);
   const [isShowBoard, setIsShowBoard] = useState<boolean>(false);
+  const [isViewConfirmModal, setIsViewConfirmModal] = useState<boolean>(false);
 
   const [board, setBoard] = useState(Array(9).fill(""));
   const [gameData, setGameData] = useState({
@@ -45,14 +47,17 @@ const Game = () => {
 
     const result = checkWinner(newBoard);
     if (result === "draw") {
-      setWinner("Draw");
+      setWinner("draw");
       await updateRound(gameData.round_id, newBoard, null, 'draw');
+      setIsViewConfirmModal(true)
       return;
     } else if (result) {
       setWinner(result);
       await updateRound(gameData.round_id, newBoard, result, 'completed');
+      setIsViewConfirmModal(true)
       return;
     }
+
     await updateBoard(gameData.round_id, newBoard);
   };
 
@@ -60,9 +65,14 @@ const Game = () => {
     setBoard(Array(9).fill(""));
     setCurrentPlayer("X");
     setWinner(null);
+    setIsViewConfirmModal(false);
 
     const round = await addRound(gameData.game_id);
     setGameData({ ...gameData, round_id: round.round._id });
+  };
+
+  const onClickCancel = async () => {
+    window.location.reload();
   };
 
   const handleChangeNewGameForm = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,17 +86,24 @@ const Game = () => {
 
     if (createGame.success) {
       const round = await addRound(createGame.game._id);
-      setGameData({ ...gameData, game_id: createGame.game._id, round_id: round.round._id });
+      setGameData({
+        ...gameData,
+        game_id: createGame.game._id,
+        round_id: round.round._id,
+      });
       setIsViewStartGame(false);
       setIsShowBoard(true);
     }
   };
 
-  const renderStatus = useCallback(() => {
+  const winnerName = winner === "X" ? gameData?.player_x : gameData?.player_o;
+  const confirmationMessage = winner !== "draw"
+  ? `Congrats ${winnerName}, you win!`
+  : "It's a draw!";
+
+  const renderTurn = useCallback(() => {
     if (winner) {
-      const winnerName =
-        winner === "X" ? gameData?.player_x : gameData?.player_o;
-      return winner === "Draw" ? "It's a draw!" : `${winnerName} wins!`;
+      return null
     }
 
     const playerName =
@@ -117,13 +134,8 @@ const Game = () => {
           </>
         ) : (
           <>
-            {renderStatus()}
+            {renderTurn()}
             <Board board={board} handleClick={handleClick} />
-            {winner && (
-              <PrimaryButton width="200px" onClick={() => onClickContinue()}>
-                Continue
-              </PrimaryButton>
-            )}
           </>
         )}
       </div>
@@ -138,6 +150,14 @@ const Game = () => {
         isOpen={isViewStartGame}
         onCloseModal={() => setIsViewStartGame(false)}
         onSubmitForm={onSubmitStartNewGame}
+      />
+      <ConfirmationModal
+        winner={winner ?? ""}
+        isOpen={isViewConfirmModal}
+        gameId={gameData.game_id}
+        message={confirmationMessage}
+        onCancelModalHandler={onClickCancel}
+        onConfirmHandler={onClickContinue}
       />
     </Layout>
   );

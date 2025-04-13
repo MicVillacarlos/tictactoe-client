@@ -1,5 +1,5 @@
 import { api } from "../lib/api";
-import { FetchGameResponse, GameResponse } from "../lib/types";
+import { FetchGameResponse, Game, GameResponse } from "../lib/types";
 
 export async function addGame(
   playerXName: string,
@@ -15,3 +15,6 @@ export async function fetchGames(
   return api.get(`/api/games/${page}/${limit}`);
 }
 
+export async function getGame(id: string): Promise<{ game: Game }> {
+  return api.get(`/api/games/${id}`);
+}
