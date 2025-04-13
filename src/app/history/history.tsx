@@ -78,6 +78,7 @@ const History = ({
     }
 
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.current]);
   //--Prevents fetch in first render
 
@@ -105,13 +106,11 @@ const History = ({
     }));
   }, []);
 
-  const handleClickViewDetails = useCallback(
-    (data: FetchGameResponse | string) => {
-      const { _id } = data as FetchGameResponse;
-      router.push(`/history/${_id}`);
-    },
-    []
-  );
+  const handleClickViewDetails = (data: FetchGameResponse | string) => {
+    const { _id } = data as FetchGameResponse;
+    router.push(`/history/${_id}`);
+  };
+
 
   return (
     <Layout>
