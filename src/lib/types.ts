@@ -59,4 +59,5 @@ export interface Player {
     __v: number;
     winnerName?: string;
     loserName?: string;
+    roundNum: number;
   }
