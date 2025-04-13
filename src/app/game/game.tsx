@@ -12,6 +12,7 @@ import { addApostrophe, isFirstLetterCapitalized } from "../../lib/helpers/helpe
 import { WINNING_COMBOS } from "../../lib/utils/constants/constants";
 import StartNewGameFormContent from "./StartNewGameFormContent";
 import { useToastContext } from "../../lib/utils/providers/ToastProvider";
+import { motion } from "framer-motion";
 
 const Game = () => {
   const { showToast } = useToastContext();
@@ -155,12 +156,23 @@ const Game = () => {
               width={350}
               height={0}
             />
-            <PrimaryButton
-              onClick={() => setIsViewStartGame(true)}
-              width="200px"
+            <motion.div
+              initial={{ scale: 1 }}
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{
+                duration: 1,
+                ease: "easeInOut",
+                repeat: Infinity,
+                repeatDelay: 1,
+              }}
             >
-              Start New Game
-            </PrimaryButton>
+              <PrimaryButton
+                onClick={() => setIsViewStartGame(true)}
+                width="200px"
+              >
+                Start New Game
+              </PrimaryButton>
+            </motion.div>
           </>
         ) : (
           <>
