@@ -8,11 +8,13 @@ import Board from "../../components/Organisms/board/Board";
 import Layout from "../../components/Organisms/layout/Layout";
 import ConfirmationModal from "../../components/Organisms/modal/ConfirmationModal";
 import ModalForm from "../../components/Organisms/modal/ModalForm";
-import { addApostrophe } from "../../lib/helpers/helpers";
+import { addApostrophe, isFirstLetterCapitalized } from "../../lib/helpers/helpers";
 import { WINNING_COMBOS } from "../../lib/utils/constants/constants";
 import StartNewGameFormContent from "./StartNewGameFormContent";
+import { useToastContext } from "../../lib/utils/providers/ToastProvider";
 
 const Game = () => {
+  const { showToast } = useToastContext();
   const [isViewStartGame, setIsViewStartGame] = useState<boolean>(false);
   const [isShowBoard, setIsShowBoard] = useState<boolean>(false);
   const [isViewConfirmModal, setIsViewConfirmModal] = useState<boolean>(false);
@@ -48,20 +50,20 @@ const Game = () => {
     const result = checkWinner(newBoard);
     if (result === "draw") {
       setWinner("draw");
-      await updateRound(gameData.round_id, newBoard, null, 'draw');
-      setIsViewConfirmModal(true)
+      await updateRound(gameData.round_id, newBoard, null, "draw");
+      setIsViewConfirmModal(true);
       return;
     } else if (result) {
       setWinner(result);
-      await updateRound(gameData.round_id, newBoard, result, 'completed');
-      setIsViewConfirmModal(true)
+      await updateRound(gameData.round_id, newBoard, result, "completed");
+      setIsViewConfirmModal(true);
       return;
     }
 
     await updateBoard(gameData.round_id, newBoard);
   };
 
-  const onClickContinue = async() => {
+  const onClickContinue = async () => {
     setBoard(Array(9).fill(""));
     setCurrentPlayer("X");
     setWinner(null);
@@ -78,13 +80,38 @@ const Game = () => {
   const handleChangeNewGameForm = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGameData({ ...gameData, [e.target.id]: e.target.value });
   };
-
   const onSubmitStartNewGame = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const createGame = await addGame(gameData.player_x, gameData.player_o);
+    const { player_x, player_o } = gameData;
+
+    // Check for duplicate names
+    if (player_o === player_x) {
+      showToast(
+        "Player X and Player O cannot have the same name. Please enter distinct names.",
+        "danger",
+        5
+      );
+      return;
+    }
+
+    if (
+      !isFirstLetterCapitalized(player_x) ||
+      !isFirstLetterCapitalized(player_o)
+    ) {
+      showToast(
+        "Each player name must start with a capital letter.",
+        "danger",
+        5
+      );
+      return;
+    }
+  
+
+    const createGame = await addGame(player_x, player_o);
 
     if (createGame.success) {
+      showToast("Game created. Enjoy!", "success");
       const round = await addRound(createGame.game._id);
       setGameData({
         ...gameData,
@@ -97,13 +124,12 @@ const Game = () => {
   };
 
   const winnerName = winner === "X" ? gameData?.player_x : gameData?.player_o;
-  const confirmationMessage = winner !== "draw"
-  ? `Congrats ${winnerName}, you win!`
-  : "It's a draw!";
+  const confirmationMessage =
+    winner !== "draw" ? `Congrats ${winnerName}, you win!` : "It's a draw!";
 
   const renderTurn = useCallback(() => {
     if (winner) {
-      return null
+      return null;
     }
 
     const playerName =
@@ -111,7 +137,11 @@ const Game = () => {
         ? addApostrophe(gameData?.player_x)
         : addApostrophe(gameData?.player_o);
 
-    return `${playerName} turn`;
+    return (
+      <span>
+        <strong>{playerName}</strong> turn
+      </span>
+    );
   }, [currentPlayer, gameData?.player_x, gameData?.player_o, winner]);
 
   return (

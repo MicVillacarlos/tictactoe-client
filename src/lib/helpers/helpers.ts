@@ -57,3 +57,7 @@ export const formatDate = (date: Date | string) => {
   const zonedDate = toZonedTime(new Date(date), timezone);
   return format(zonedDate, "MM-dd-yyyy");
 };
+
+export const isFirstLetterCapitalized = (name: string) => {
+  return /^[A-Z]/.test(name);
+};

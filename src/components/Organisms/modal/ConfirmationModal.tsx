@@ -1,7 +1,9 @@
-"use client"
+"use client";
 import React, { useEffect, useMemo, useState } from "react";
 import { Game } from "../../../lib/types";
 import { getGame } from "../../../api/game";
+import PrimaryButton from "../../Atoms/buttons/PrimaryButton";
+import SecondaryButton from "../../Atoms/buttons/SecondaryButton";
 
 interface ModalPropsType {
   isOpen: boolean;
@@ -13,9 +15,15 @@ interface ModalPropsType {
 }
 
 const ConfirmationModal = (props: ModalPropsType) => {
-  const [game, setGame] = useState<Game|null>(null)
-  const { isOpen, onCancelModalHandler, onConfirmHandler, message, gameId, winner } = props;
-
+  const [game, setGame] = useState<Game | null>(null);
+  const {
+    isOpen,
+    onCancelModalHandler,
+    onConfirmHandler,
+    message,
+    gameId,
+    winner,
+  } = props;
 
   const fetchData = async () => {
     const data = await getGame(gameId);
@@ -61,7 +69,6 @@ const ConfirmationModal = (props: ModalPropsType) => {
       );
     }
 
-
     const pointDifference = playerX.score - playerO.score;
     const playerXLosses = rounds! - draws! - playerX.score;
     const playerOLosses = rounds! - draws! - playerO.score;
@@ -80,8 +87,7 @@ const ConfirmationModal = (props: ModalPropsType) => {
       </div>
     );
   }, [game]);
-  
- 
+
   return (
     <div
       id="default-modal"
@@ -91,7 +97,9 @@ const ConfirmationModal = (props: ModalPropsType) => {
         isOpen ? "" : "hidden"
       } overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0 h-[calc(100%)] max-h-full bg-black bg-black/40`}
     >
-      <div className={`relative w-full max-h-full max-w-md`}>
+      <div
+        className={`relative w-full max-h-full max-w-md`}
+      >
         <div className="relative rounded-lg shadow-sm bg-white text-black p-7 flex flex-col items-center">
           <p className="text-4xl font-bold my-2">
             {winner !== "draw" ? "🎉" : "😐"}
@@ -99,21 +107,10 @@ const ConfirmationModal = (props: ModalPropsType) => {
           <p className="text-xl font-semibold mb-8">{message}</p>
           {status}
           <div className="flex flex-col w-full gap-2">
-            <button
-              data-modal-hide="default-modal"
-              className="text-white bg-[#205072] hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold rounded-lg text-sm px-5 py-2.5 text-center cursor-pointer"
-              onClick={onConfirmHandler}
-            >
-              CONTINUE
-            </button>
-            <button
-              data-modal-hide="default-modal"
-              type="button"
-              className="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-700 focus:z-10 focus:ring-4 focus:ring-gray-100 cursor-pointer"
-              onClick={onCancelModalHandler}
-            >
+            <PrimaryButton onClick={onConfirmHandler}>CONTINUE</PrimaryButton>
+            <SecondaryButton onClick={onCancelModalHandler}>
               STOP
-            </button>
+            </SecondaryButton>
           </div>
         </div>
       </div>
