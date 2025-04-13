@@ -22,8 +22,7 @@ const GameDetailTable = dynamic(
 const GameDetails = () => {
   const [board, setBoard] = useState<string[]>([]);
   const [isViewBoard, setIsViewBoard] = useState<boolean>(false);
-  const [detailsData, setDetailsData] =
-    useState<FetchRoundResponse[]>([]);
+  const [detailsData, setDetailsData] = useState<FetchRoundResponse[]>([]);
   const [pagination, setPagination] = useState({
     current: 1,
     limit: 10,
@@ -68,7 +67,7 @@ const GameDetails = () => {
 
   useEffect(() => {
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.current]);
 
   const handleNextPagination = useCallback(() => {
@@ -106,8 +105,8 @@ const GameDetails = () => {
 
   const onCloseModalHandler = useCallback(() => {
     setIsViewBoard(false);
-    setBoard([])
-  },[])
+    setBoard([]);
+  }, []);
 
   return (
     <Layout>
@@ -125,7 +124,7 @@ const GameDetails = () => {
         pagination={pagination}
       />
       <ModalView
-        content={<Board board={board}/>}
+        content={<Board board={board} />}
         isOpen={isViewBoard}
         onCloseModal={onCloseModalHandler}
       />
